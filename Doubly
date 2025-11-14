@@ -1,0 +1,183 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct node {
+    int data;
+    struct node *prev;
+    struct node *next;
+};
+
+int main() {
+    struct node *head = NULL, *tail = NULL, *newnode, *temp;
+    int choice = 1, pos, i, key, position, found;
+
+    // ---------------------- CREATE INITIAL LIST ----------------------
+    while (choice) {
+        newnode = (struct node*) malloc(sizeof(struct node));
+        printf("Enter data: ");
+        scanf("%d", &newnode->data);
+        newnode->prev = newnode->next = NULL;
+
+        if (head == NULL) {
+            head = tail = newnode;
+        } else {
+            tail->next = newnode;
+            newnode->prev = tail;
+            tail = newnode;
+        }
+
+        printf("Do you want to continue (1/0): ");
+        scanf("%d", &choice);
+    }
+
+    // ---------------------- INSERT AT BEGINNING ----------------------
+    newnode = (struct node*) malloc(sizeof(struct node));
+    printf("Enter data to insert at beginning: ");
+    scanf("%d", &newnode->data);
+
+    newnode->prev = NULL;
+    newnode->next = head;
+    head->prev = newnode;
+    head = newnode;
+
+    // ---------------------- INSERT AT END ----------------------
+    newnode = (struct node*) malloc(sizeof(struct node));
+    printf("Enter data to insert at end: ");
+    scanf("%d", &newnode->data);
+
+    newnode->next = NULL;
+    newnode->prev = tail;
+    tail->next = newnode;
+    tail = newnode;
+
+    // ---------------------- INSERT AT POSITION ----------------------
+    newnode = (struct node*) malloc(sizeof(struct node));
+    printf("Enter position to insert: ");
+    scanf("%d", &pos);
+    printf("Enter data: ");
+    scanf("%d", &newnode->data);
+
+    if (pos == 1) { // Insert at beginning
+        newnode->prev = NULL;
+        newnode->next = head;
+        head->prev = newnode;
+        head = newnode;
+    } else {
+        temp = head;
+        for (i = 1; i < pos - 1 && temp != NULL; i++)
+            temp = temp->next;
+
+        if (temp == NULL) {
+            printf("Invalid position!\n");
+        } else {
+            newnode->next = temp->next;
+            newnode->prev = temp;
+
+            if (temp->next != NULL)
+                temp->next->prev = newnode;
+
+            temp->next = newnode;
+
+            if (temp == tail)
+                tail = newnode;
+        }
+    }
+
+    // ---------------------- DELETE AT BEGINNING ----------------------
+    if (head != NULL) {
+        temp = head;
+        head = head->next;
+
+        if (head != NULL)
+            head->prev = NULL;
+        else
+            tail = NULL;
+
+        free(temp);
+    }
+
+    // ---------------------- DELETE AT END ----------------------
+    if (tail != NULL) {
+        temp = tail;
+        tail = tail->prev;
+
+        if (tail != NULL)
+            tail->next = NULL;
+        else
+            head = NULL;
+
+        free(temp);
+    }
+
+    // ---------------------- DELETE AT POSITION ----------------------
+    printf("Enter position to delete: ");
+    scanf("%d", &pos);
+
+    if (pos == 1 && head != NULL) {
+        temp = head;
+        head = head->next;
+
+        if (head != NULL)
+            head->prev = NULL;
+        else
+            tail = NULL;
+
+        free(temp);
+    } else {
+        temp = head;
+
+        for (i = 1; i < pos && temp != NULL; i++)
+            temp = temp->next;
+
+        if (temp == NULL) {
+            printf("Invalid position!\n");
+        } else {
+            if (temp->prev != NULL)
+                temp->prev->next = temp->next;
+
+            if (temp->next != NULL)
+                temp->next->prev = temp->prev;
+
+            if (temp == head)
+                head = temp->next;
+
+            if (temp == tail)
+                tail = temp->prev;
+
+            free(temp);
+        }
+    }
+
+    // ---------------------- SEARCH ELEMENT ----------------------
+    printf("Enter element to search: ");
+    scanf("%d", &key);
+
+    temp = head;
+    position = 1;
+    found = 0;
+
+    while (temp != NULL) {
+        if (temp->data == key) {
+            printf("Element %d found at position %d\n", key, position);
+            found = 1;
+            break;
+        }
+        temp = temp->next;
+        position++;
+    }
+
+    if (!found)
+        printf("Element %d not found in the list\n", key);
+
+    // ---------------------- DISPLAY FINAL LIST ----------------------
+    printf("\nFinal Doubly Linked List: ");
+    temp = head;
+
+    while (temp != NULL) {
+        printf("%d <-> ", temp->data);
+        temp = temp->next;
+    }
+    printf("NULL\n");
+
+    return 0;
+}
