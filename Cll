@@ -1,0 +1,200 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *next;
+};
+
+struct Node *last = NULL;
+
+// INSERT AT BEGINNING
+void insertBegin(int x) {
+    struct Node *n = (struct Node*)malloc(sizeof(struct Node));
+    n->data = x;
+
+    if (last == NULL) { 
+        last = n;
+        n->next = last;
+    } else {
+        n->next = last->next;
+        last->next = n;
+    }
+}
+
+// INSERT AT END
+void insertEnd(int x) {
+    struct Node *n = (struct Node*)malloc(sizeof(struct Node));
+    n->data = x;
+
+    if (last == NULL) {
+        last = n;
+        n->next = last;
+    } else {
+        n->next = last->next;
+        last->next = n;
+        last = n;
+    }
+}
+
+// INSERT AT POSITION
+void insertPos(int x, int pos) {
+    struct Node *n = (struct Node*)malloc(sizeof(struct Node));
+    n->data = x;
+
+    if (last == NULL && pos == 1) {
+        last = n;
+        n->next = last;
+        return;
+    }
+
+    struct Node *t = last->next;
+    int i = 1;
+
+    while (i < pos-1 && t != last) {
+        t = t->next;
+        i++;
+    }
+
+    n->next = t->next;
+    t->next = n;
+
+    if (t == last) 
+        last = n;
+}
+
+// DELETE AT BEGINNING
+void deleteBegin() {
+    if (last == NULL) return;
+
+    struct Node *first = last->next;
+
+    if (first == last) { 
+        last = NULL;
+    } else {
+        last->next = first->next;
+    }
+
+    free(first);
+}
+
+// DELETE AT END
+void deleteEnd() {
+    if (last == NULL) return;
+
+    struct Node *t = last->next;
+
+    if (t == last) {
+        last = NULL;
+        free(t);
+        return;
+    }
+
+    while (t->next != last)
+        t = t->next;
+
+    t->next = last->next;
+    free(last);
+    last = t;
+}
+
+// DELETE AT POSITION
+void deletePos(int pos) {
+    if (last == NULL) return;
+
+    struct Node *t = last->next;
+
+    if (pos == 1) {
+        deleteBegin();
+        return;
+    }
+
+    int i = 1;
+    while (i < pos-1 && t->next != last->next) {
+        t = t->next;
+        i++;
+    }
+
+    struct Node *del = t->next;
+    t->next = del->next;
+
+    if (del == last)
+        last = t;
+
+    free(del);
+}
+
+// SEARCH
+void search(int key) {
+    if (last == NULL) {
+        printf("List empty\n");
+        return;
+    }
+
+    struct Node *t = last->next;
+    int pos = 1;
+
+    do {
+        if (t->data == key) {
+            printf("Found %d at position %d\n", key, pos);
+            return;
+        }
+        t = t->next;
+        pos++;
+    } while (t != last->next);
+
+    printf("%d not found\n", key);
+}
+
+// DISPLAY
+void display() {
+    if (last == NULL) {
+        printf("List empty\n");
+        return;
+    }
+
+    struct Node *t = last->next;
+
+    do {
+        printf("%d ", t->data);
+        t = t->next;
+    } while (t != last->next);
+
+    printf("\n");
+}
+
+int main() {
+
+    insertBegin(30);
+    insertBegin(20);
+    insertBegin(10);
+
+    printf("After Insertion at beginning: ");
+    display();
+
+    insertEnd(40);
+    insertEnd(50);
+    printf("After Insertion at end: ");
+    display();
+
+    insertPos(25, 3);
+    printf("After Insertion at position 3: ");
+    display();
+
+    deleteBegin();
+    printf("After Deletion at beginning: ");
+    display();
+
+    deleteEnd();
+    printf("After Deletion at end: ");
+    display();
+
+    deletePos(3);
+    printf("After Deletion at position 3: ");
+    display();
+
+    search(40);
+    search(25);
+
+    return 0;
+}
